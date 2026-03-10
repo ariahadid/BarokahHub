@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { DonationProgress } from "@/components/donation-progress";
 
 export default async function PublicMosquePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -49,14 +50,23 @@ export default async function PublicMosquePage({ params }: { params: Promise<{ s
                     <Badge variant="secondary">{program.category}</Badge>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-2">
                   <p className="text-sm text-muted-foreground line-clamp-2">
                     {program.aiDescription || program.notes || ""}
                   </p>
-                  <div className="mt-2 text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground">
                     {program.eventDate && <span>{program.eventDate}</span>}
-                    {program.targetAmount && <span> · Target: Rp {program.targetAmount.toLocaleString("id-ID")}</span>}
+                    {program.targetAmount && !program.collectedAmount && (
+                      <span> · Target: Rp {program.targetAmount.toLocaleString("id-ID")}</span>
+                    )}
                   </div>
+                  {program.collectedAmount ? (
+                    <DonationProgress
+                      collected={program.collectedAmount}
+                      target={program.targetAmount}
+                      size="mini"
+                    />
+                  ) : null}
                 </CardContent>
               </Card>
             </Link>

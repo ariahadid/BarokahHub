@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { DonationProgress } from "@/components/donation-progress";
 import Link from "next/link";
 
 export default async function PublicProgramPage({
@@ -27,6 +28,8 @@ export default async function PublicProgramPage({
   });
   if (!program) notFound();
 
+  const collected = program.collectedAmount || 0;
+
   return (
     <div>
       <Link href={`/m/${slug}`} className="text-sm text-emerald-600 hover:underline mb-4 inline-block">
@@ -41,20 +44,18 @@ export default async function PublicProgramPage({
         <p className="text-muted-foreground">{mosque.name}</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        {program.eventDate && (
-          <div className="bg-white rounded-lg p-4 border">
-            <p className="text-sm text-muted-foreground">Tanggal</p>
-            <p className="font-medium">{program.eventDate}</p>
-          </div>
-        )}
-        {program.targetAmount && (
-          <div className="bg-white rounded-lg p-4 border">
-            <p className="text-sm text-muted-foreground">Target Dana</p>
-            <p className="font-medium">Rp {program.targetAmount.toLocaleString("id-ID")}</p>
-          </div>
-        )}
-      </div>
+      {program.eventDate && (
+        <div className="bg-white rounded-lg p-4 border mb-4">
+          <p className="text-sm text-muted-foreground">Tanggal</p>
+          <p className="font-medium">{program.eventDate}</p>
+        </div>
+      )}
+
+      {(collected > 0 || program.targetAmount) && (
+        <div className="mb-6">
+          <DonationProgress collected={collected} target={program.targetAmount} size="full" />
+        </div>
+      )}
 
       {program.aiDescription && (
         <div className="prose prose-slate max-w-none mb-8">
@@ -74,7 +75,7 @@ export default async function PublicProgramPage({
               </Button>
             </a>
             <p className="text-xs text-muted-foreground mt-2">
-              Anda akan diarahkan ke halaman pembayaran Mayar
+              Pembayaran aman melalui Mayar
             </p>
           </div>
         </>
