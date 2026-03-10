@@ -44,7 +44,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ campaignUrl: result.campaignUrl });
   } catch (error) {
-    console.error("Mayar API error:", error);
+    console.error("Mayar API error:", error instanceof Error ? error.message : error);
+    console.error("Mayar API full error:", error);
     const message = error instanceof Error ? error.message : "Gagal membuat kampanye Mayar";
     return NextResponse.json(
       { error: message },
