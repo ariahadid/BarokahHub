@@ -75,6 +75,26 @@ export async function updateProgram(id: string, formData: FormData) {
   redirect("/dashboard");
 }
 
+export async function deleteProgram(id: string) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const mosque = await db.query.mosques.findFirst({
+    where: eq(mosques.userId, session.user.id),
+  });
+  if (!mosque) throw new Error("Unauthorized");
+
+  // Verify program belongs to user's mosque
+  const program = await db.query.programs.findFirst({
+    where: eq(programs.id, id),
+  });
+  if (!program || program.mosqueId !== mosque.id) throw new Error("Unauthorized");
+
+  await db.delete(programs).where(eq(programs.id, id));
+
+  redirect("/dashboard");
+}
+
 export async function getProgram(id: string) {
   return db.query.programs.findFirst({
     where: eq(programs.id, id),

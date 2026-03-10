@@ -1,4 +1,5 @@
 import { getMosqueByUser } from "@/lib/actions/mosque";
+import { deleteProgram } from "@/lib/actions/program";
 import { db } from "@/lib/db";
 import { programs } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { redirect } from "next/navigation";
+import { DeleteProgramButton } from "@/components/delete-program-button";
 
 export default async function DashboardPage() {
   const mosque = await getMosqueByUser();
@@ -112,7 +114,12 @@ export default async function DashboardPage() {
             <Card key={program.id}>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">{program.title}</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-lg">{program.title}</CardTitle>
+                    {program.targetAmount && program.collectedAmount && program.collectedAmount >= program.targetAmount && (
+                      <Badge className="bg-emerald-100 text-emerald-700 border-emerald-300">Tercapai</Badge>
+                    )}
+                  </div>
                   <Badge variant="secondary">{program.category}</Badge>
                 </div>
               </CardHeader>
@@ -148,6 +155,10 @@ export default async function DashboardPage() {
                         Lihat
                       </Button>
                     </Link>
+                    <DeleteProgramButton
+                      action={deleteProgram.bind(null, program.id)}
+                      programTitle={program.title}
+                    />
                   </div>
                 </div>
               </CardContent>
