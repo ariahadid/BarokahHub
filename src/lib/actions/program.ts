@@ -26,7 +26,7 @@ export async function createProgram(formData: FormData) {
 
   const slug = generateSlug(title);
 
-  await db.insert(programs).values({
+  const [inserted] = await db.insert(programs).values({
     mosqueId: mosque.id,
     title,
     slug,
@@ -34,9 +34,9 @@ export async function createProgram(formData: FormData) {
     eventDate: eventDate || null,
     targetAmount: targetAmount ? parseInt(targetAmount) : null,
     notes: notes || null,
-  });
+  }).returning({ id: programs.id });
 
-  redirect("/dashboard");
+  redirect(`/dashboard/programs/${inserted.id}`);
 }
 
 export async function updateProgram(id: string, formData: FormData) {
@@ -52,6 +52,7 @@ export async function updateProgram(id: string, formData: FormData) {
   const aiDescription = formData.get("aiDescription") as string;
   const aiWhatsappText = formData.get("aiWhatsappText") as string;
   const aiInstagramCaption = formData.get("aiInstagramCaption") as string;
+  const collectedAmount = formData.get("collectedAmount") as string;
 
   await db
     .update(programs)
@@ -66,6 +67,7 @@ export async function updateProgram(id: string, formData: FormData) {
       aiDescription: aiDescription || null,
       aiWhatsappText: aiWhatsappText || null,
       aiInstagramCaption: aiInstagramCaption || null,
+      collectedAmount: collectedAmount ? parseInt(collectedAmount) : null,
       updatedAt: new Date(),
     })
     .where(eq(programs.id, id));
