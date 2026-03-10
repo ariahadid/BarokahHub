@@ -1,7 +1,10 @@
 interface CreateCampaignInput {
   name: string;
+  email: string;
+  mobile?: string;
   description: string;
   targetAmount?: number;
+  redirectUrl: string;
 }
 
 interface CreateCampaignResult {
@@ -12,6 +15,9 @@ export async function createMayarCampaign(input: CreateCampaignInput): Promise<C
   const apiKey = process.env.MAYAR_API_KEY;
   if (!apiKey) throw new Error("MAYAR_API_KEY not configured");
 
+  // Set expiry to 30 days from now
+  const expiredAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
   const response = await fetch("https://api.mayar.id/hl/v1/payment/create", {
     method: "POST",
     headers: {
@@ -20,9 +26,12 @@ export async function createMayarCampaign(input: CreateCampaignInput): Promise<C
     },
     body: JSON.stringify({
       name: input.name,
+      email: input.email,
+      mobile: input.mobile || "08000000000",
+      amount: input.targetAmount || 10000,
       description: input.description,
-      amount: input.targetAmount || 0,
-      type: "donation",
+      redirectUrl: input.redirectUrl,
+      expiredAt,
     }),
   });
 
