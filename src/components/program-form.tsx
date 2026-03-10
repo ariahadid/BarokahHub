@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { QrCodeCard } from "@/components/qr-code-card";
 
 const CATEGORIES = [
   { value: "buka_puasa", label: "Buka Puasa" },
@@ -19,19 +20,23 @@ interface ProgramFormProps {
   program?: {
     id: string;
     title: string;
+    slug: string;
     category: string;
     eventDate: string | null;
     targetAmount: number | null;
+    collectedAmount: number | null;
     notes: string | null;
     mayarCampaignUrl: string | null;
     aiDescription: string | null;
     aiWhatsappText: string | null;
     aiInstagramCaption: string | null;
   };
+  mosqueSlug?: string;
+  mosqueName?: string;
   action: (formData: FormData) => Promise<void>;
 }
 
-export function ProgramForm({ program, action }: ProgramFormProps) {
+export function ProgramForm({ program, mosqueSlug, mosqueName, action }: ProgramFormProps) {
   const [aiDescription, setAiDescription] = useState(
     program?.aiDescription || ""
   );
@@ -43,6 +48,8 @@ export function ProgramForm({ program, action }: ProgramFormProps) {
   );
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
+  const [mayarUrl, setMayarUrl] = useState(program?.mayarCampaignUrl || "");
+  const [creatingMayar, setCreatingMayar] = useState(false);
 
   async function handleGenerate() {
     if (!program?.id) {
@@ -70,6 +77,39 @@ export function ProgramForm({ program, action }: ProgramFormProps) {
       setError("Terjadi kesalahan saat generate konten");
     } finally {
       setGenerating(false);
+    }
+  }
+
+  async function handleCreateMayar() {
+    if (!program?.id) {
+      setError("Simpan program terlebih dahulu sebelum buat link donasi");
+      return;
+    }
+    setCreatingMayar(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/mayar/create-campaign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: program.title,
+          description: aiDescription || program.title,
+          targetAmount: program.targetAmount,
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Gagal membuat link donasi Mayar");
+        return;
+      }
+
+      setMayarUrl(data.campaignUrl);
+    } catch {
+      setError("Terjadi kesalahan saat membuat kampanye Mayar");
+    } finally {
+      setCreatingMayar(false);
     }
   }
 
@@ -220,22 +260,79 @@ export function ProgramForm({ program, action }: ProgramFormProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Link Donasi Mayar</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Link Donasi Mayar</CardTitle>
+            {!mayarUrl && (
+              <Button
+                type="button"
+                onClick={handleCreateMayar}
+                disabled={creatingMayar || !program?.id}
+                variant="outline"
+                className="text-emerald-600 border-emerald-600"
+              >
+                {creatingMayar ? "Membuat..." : "Buat Link Donasi Mayar"}
+              </Button>
+            )}
+          </div>
         </CardHeader>
-        <CardContent className="space-y-2">
-          <Label htmlFor="mayarCampaignUrl">URL Kampanye Mayar</Label>
-          <Input
-            id="mayarCampaignUrl"
-            name="mayarCampaignUrl"
-            defaultValue={program?.mayarCampaignUrl || ""}
-            placeholder="https://masjid.mayar.id/program-anda"
-          />
-          <p className="text-xs text-muted-foreground">
-            Buat kampanye donasi di dashboard Mayar, lalu paste link-nya di
-            sini.
-          </p>
+        <CardContent className="space-y-4">
+          {mayarUrl ? (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                <span className="text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Aktif</span>
+                <a
+                  href={mayarUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-emerald-600 hover:underline truncate"
+                >
+                  {mayarUrl}
+                </a>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => copyToClipboard(mayarUrl)}
+                >
+                  Copy
+                </Button>
+              </div>
+              <input type="hidden" name="mayarCampaignUrl" value={mayarUrl} />
+            </div>
+          ) : (
+            <div>
+              <p className="text-sm text-muted-foreground">
+                {program?.id
+                  ? "Klik tombol di atas untuk otomatis membuat kampanye donasi di Mayar."
+                  : "Simpan program terlebih dahulu, lalu buat link donasi Mayar."}
+              </p>
+              <input type="hidden" name="mayarCampaignUrl" value="" />
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="collectedAmount">Dana Terkumpul (Rp)</Label>
+            <Input
+              id="collectedAmount"
+              name="collectedAmount"
+              type="number"
+              defaultValue={program?.collectedAmount || ""}
+              placeholder="Masukkan jumlah dana yang sudah terkumpul"
+            />
+            <p className="text-xs text-muted-foreground">
+              Update jumlah donasi yang sudah terkumpul untuk ditampilkan di halaman publik.
+            </p>
+          </div>
         </CardContent>
       </Card>
+
+      {program?.id && mosqueSlug && mosqueName && (
+        <QrCodeCard
+          url={`${typeof window !== "undefined" ? window.location.origin : ""}/m/${mosqueSlug}/${program.slug}`}
+          programTitle={program.title}
+          mosqueName={mosqueName}
+        />
+      )}
 
       <Button
         type="submit"
