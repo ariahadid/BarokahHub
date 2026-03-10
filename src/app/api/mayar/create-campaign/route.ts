@@ -30,11 +30,14 @@ export async function POST(request: NextRequest) {
 
     const origin = request.headers.get("origin") || request.headers.get("referer")?.replace(/\/[^/]*$/, "") || "https://localhost:3000";
 
+    // Mayar max description is 555 characters
+    const trimmedDescription = (description || name).slice(0, 550);
+
     const result = await createMayarCampaign({
       name,
       email: session.user.email || "noreply@barakahhub.id",
       mobile: mosque?.contactWhatsapp || "08000000000",
-      description: description || name,
+      description: trimmedDescription,
       targetAmount,
       redirectUrl: mosque ? `${origin}/m/${mosque.slug}` : origin,
     });
