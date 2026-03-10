@@ -13,12 +13,20 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import Link from "next/link";
 
 export default async function MosqueSetupPage() {
   const mosque = await getMosqueByUser();
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto">
+      <Link
+        href="/dashboard"
+        className="text-sm text-muted-foreground hover:text-foreground mb-4 inline-block"
+      >
+        &larr; Kembali ke Dashboard
+      </Link>
+    <Card>
       <CardHeader>
         <CardTitle>{mosque ? "Edit Masjid" : "Daftarkan Masjid"}</CardTitle>
         <CardDescription>
@@ -81,5 +89,6 @@ export default async function MosqueSetupPage() {
         </form>
       </CardContent>
     </Card>
+    </div>
   );
 }
