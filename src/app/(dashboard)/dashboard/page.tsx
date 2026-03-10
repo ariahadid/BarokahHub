@@ -23,6 +23,11 @@ export default async function DashboardPage() {
     orderBy: (programs, { desc }) => [desc(programs.createdAt)],
   });
 
+  const totalPrograms = mosquePrograms.length;
+  const totalTarget = mosquePrograms.reduce((sum, p) => sum + (p.targetAmount || 0), 0);
+  const totalCollected = mosquePrograms.reduce((sum, p) => sum + (p.collectedAmount || 0), 0);
+  const overallPercentage = totalTarget > 0 ? Math.round((totalCollected / totalTarget) * 100) : 0;
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -47,7 +52,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-6">
         <span className="text-sm text-muted-foreground">Halaman publik:</span>
         <Link
           href={`/m/${mosque.slug}`}
@@ -56,6 +61,44 @@ export default async function DashboardPage() {
           /m/{mosque.slug}
         </Link>
       </div>
+
+      {totalPrograms > 0 && (
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">Program Aktif</p>
+              <p className="text-3xl font-bold text-emerald-700">{totalPrograms}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">Total Target</p>
+              <p className="text-2xl font-bold text-emerald-700">
+                Rp {totalTarget.toLocaleString("id-ID")}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">Terkumpul</p>
+              <p className="text-2xl font-bold text-emerald-700">
+                Rp {totalCollected.toLocaleString("id-ID")}
+              </p>
+              {totalTarget > 0 && (
+                <div className="mt-2">
+                  <div className="h-2 bg-emerald-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-emerald-500 rounded-full"
+                      style={{ width: `${overallPercentage}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">{overallPercentage}% tercapai</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {mosquePrograms.length === 0 ? (
         <Card>
@@ -75,15 +118,24 @@ export default async function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">
-                    {program.eventDate && <span>{program.eventDate}</span>}
-                    {program.targetAmount && (
-                      <span>
-                        {" "}
-                        · Target: Rp{" "}
-                        {program.targetAmount.toLocaleString("id-ID")}
-                      </span>
-                    )}
+                  <div className="text-sm text-muted-foreground space-y-1">
+                    <div>
+                      {program.eventDate && <span>{program.eventDate}</span>}
+                      {program.targetAmount && (
+                        <span>
+                          {program.eventDate && " · "}
+                          Target: Rp {program.targetAmount.toLocaleString("id-ID")}
+                        </span>
+                      )}
+                    </div>
+                    {program.collectedAmount ? (
+                      <div className="text-emerald-600 font-medium">
+                        Terkumpul: Rp {program.collectedAmount.toLocaleString("id-ID")}
+                        {program.targetAmount && (
+                          <span> ({Math.round((program.collectedAmount / program.targetAmount) * 100)}%)</span>
+                        )}
+                      </div>
+                    ) : null}
                   </div>
                   <div className="flex gap-2">
                     <Link href={`/dashboard/programs/${program.id}`}>
