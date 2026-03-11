@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { mosques, programs } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
@@ -7,6 +8,49 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { DonationProgress } from "@/components/donation-progress";
 import Link from "next/link";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string; programSlug: string }>;
+}): Promise<Metadata> {
+  const { slug, programSlug } = await params;
+
+  const mosque = await db.query.mosques.findFirst({
+    where: eq(mosques.slug, slug),
+  });
+  if (!mosque) return {};
+
+  const program = await db.query.programs.findFirst({
+    where: and(
+      eq(programs.mosqueId, mosque.id),
+      eq(programs.slug, programSlug)
+    ),
+  });
+  if (!program) return {};
+
+  const title = `${program.title} — ${mosque.name} | BarakahHub`;
+  const rawDesc = program.aiDescription || program.notes || "";
+  const description = rawDesc.length > 200 ? rawDesc.slice(0, 197) + "..." : rawDesc || `Program Ramadhan ${program.title} di ${mosque.name}`;
+  const ogImageUrl = `/api/og?title=${encodeURIComponent(program.title)}&subtitle=${encodeURIComponent(mosque.name)}&type=program`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: program.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
+    },
+  };
+}
 
 export default async function PublicProgramPage({
   params,

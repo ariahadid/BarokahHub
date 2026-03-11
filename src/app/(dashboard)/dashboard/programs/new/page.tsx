@@ -1,6 +1,6 @@
 import { createProgram } from "@/lib/actions/program";
-import { ProgramForm } from "@/components/program-form";
 import Link from "next/link";
+import { NewProgramWithTemplates } from "@/components/new-program-with-templates";
 
 export default function NewProgramPage() {
   return (
@@ -12,7 +12,7 @@ export default function NewProgramPage() {
         &larr; Kembali ke Dashboard
       </Link>
       <h1 className="text-2xl font-bold mb-6">Buat Program Ramadhan</h1>
-      <ProgramForm action={createProgram} />
+      <NewProgramWithTemplates action={createProgram} />
     </div>
   );
 }

@@ -56,6 +56,7 @@ export function QrCodeCard({ url, programTitle, mosqueName }: QrCodeCardProps) {
           <p style="color:#666;margin-bottom:24px;">${mosqueName}</p>
           <div style="width:300px;height:300px;">${svgHtml}</div>
           <p style="margin-top:24px;color:#059669;font-weight:bold;font-size:18px;">Scan untuk donasi</p>
+          <p style="margin-top:16px;color:#999;font-size:12px;">Supported by mayar.id</p>
         </body>
       </html>
     `);

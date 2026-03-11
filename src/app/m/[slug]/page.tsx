@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { mosques, programs } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -6,6 +7,36 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DonationProgress } from "@/components/donation-progress";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+
+  const mosque = await db.query.mosques.findFirst({
+    where: eq(mosques.slug, slug),
+  });
+  if (!mosque) return {};
+
+  const title = `${mosque.name} — Program Ramadhan | BarakahHub`;
+  const description = mosque.description || `Lihat program Ramadhan dan donasi online untuk ${mosque.name}`;
+  const ogImageUrl = `/api/og?title=${encodeURIComponent(mosque.name)}&subtitle=${encodeURIComponent(mosque.city || "")}&type=mosque`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: mosque.name }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
+    },
+  };
+}
 
 export default async function PublicMosquePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

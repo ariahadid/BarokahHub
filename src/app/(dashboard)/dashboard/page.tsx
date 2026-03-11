@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { redirect } from "next/navigation";
 import { DeleteProgramButton } from "@/components/delete-program-button";
+import { AnalyticsCharts } from "@/components/analytics-charts";
 
 export default async function DashboardPage() {
   const mosque = await getMosqueByUser();
@@ -100,6 +101,17 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
         </div>
+      )}
+
+      {totalPrograms > 0 && (
+        <AnalyticsCharts
+          programs={mosquePrograms.map((p) => ({
+            title: p.title,
+            category: p.category,
+            targetAmount: p.targetAmount,
+            collectedAmount: p.collectedAmount,
+          }))}
+        />
       )}
 
       {mosquePrograms.length === 0 ? (

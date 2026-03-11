@@ -31,12 +31,18 @@ interface ProgramFormProps {
     aiWhatsappText: string | null;
     aiInstagramCaption: string | null;
   };
+  initialData?: {
+    title: string;
+    category: string;
+    targetAmount: number;
+    notes: string;
+  };
   mosqueSlug?: string;
   mosqueName?: string;
   action: (formData: FormData) => Promise<void>;
 }
 
-export function ProgramForm({ program, mosqueSlug, mosqueName, action }: ProgramFormProps) {
+export function ProgramForm({ program, initialData, mosqueSlug, mosqueName, action }: ProgramFormProps) {
   const [aiDescription, setAiDescription] = useState(
     program?.aiDescription || ""
   );
@@ -132,7 +138,7 @@ export function ProgramForm({ program, mosqueSlug, mosqueName, action }: Program
               id="title"
               name="title"
               required
-              defaultValue={program?.title || ""}
+              defaultValue={program?.title || initialData?.title || ""}
             />
           </div>
           <div className="space-y-2">
@@ -141,7 +147,7 @@ export function ProgramForm({ program, mosqueSlug, mosqueName, action }: Program
               id="category"
               name="category"
               required
-              defaultValue={program?.category || ""}
+              defaultValue={program?.category || initialData?.category || ""}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="">Pilih kategori</option>
@@ -168,7 +174,7 @@ export function ProgramForm({ program, mosqueSlug, mosqueName, action }: Program
                 id="targetAmount"
                 name="targetAmount"
                 type="number"
-                defaultValue={program?.targetAmount || ""}
+                defaultValue={program?.targetAmount || initialData?.targetAmount || ""}
               />
             </div>
           </div>
@@ -178,7 +184,7 @@ export function ProgramForm({ program, mosqueSlug, mosqueName, action }: Program
               id="notes"
               name="notes"
               rows={3}
-              defaultValue={program?.notes || ""}
+              defaultValue={program?.notes || initialData?.notes || ""}
               placeholder="Jelaskan singkat tujuan program ini..."
             />
           </div>
