@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
   title: "BarakahHub — Program Ramadhan & Donasi Online untuk Masjid",
   description:
     "Buat halaman program Ramadhan dan donasi online untuk masjid Anda dengan bantuan AI, terhubung ke Mayar.",

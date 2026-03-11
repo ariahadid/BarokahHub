@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       redirectUrl: mosque ? `${origin}/m/${mosque.slug}` : origin,
     });
 
-    return NextResponse.json({ campaignUrl: result.campaignUrl });
+    return NextResponse.json({ campaignUrl: result.campaignUrl, paymentId: result.paymentId });
   } catch (error) {
     console.error("Mayar API error:", error instanceof Error ? error.message : error);
     console.error("Mayar API full error:", error);

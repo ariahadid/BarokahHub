@@ -9,6 +9,7 @@ interface CreateCampaignInput {
 
 interface CreateCampaignResult {
   campaignUrl: string;
+  paymentId: string;
 }
 
 export async function createMayarCampaign(input: CreateCampaignInput): Promise<CreateCampaignResult> {
@@ -41,5 +42,8 @@ export async function createMayarCampaign(input: CreateCampaignInput): Promise<C
   }
 
   const data = await response.json();
-  return { campaignUrl: data.data?.link || data.data?.url || "" };
+  return {
+    campaignUrl: data.data?.link || data.data?.url || "",
+    paymentId: data.data?.id || "",
+  };
 }

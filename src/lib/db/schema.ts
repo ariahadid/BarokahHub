@@ -41,6 +41,7 @@ export const programs = sqliteTable("programs", {
   notes: text("notes"),
   collectedAmount: integer("collected_amount"),
   mayarCampaignUrl: text("mayar_campaign_url"),
+  mayarPaymentId: text("mayar_payment_id"),
   aiDescription: text("ai_description"),
   aiWhatsappText: text("ai_whatsapp_text"),
   aiInstagramCaption: text("ai_instagram_caption"),

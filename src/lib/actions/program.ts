@@ -52,6 +52,7 @@ export async function updateProgram(id: string, formData: FormData) {
   const aiDescription = formData.get("aiDescription") as string;
   const aiWhatsappText = formData.get("aiWhatsappText") as string;
   const aiInstagramCaption = formData.get("aiInstagramCaption") as string;
+  const mayarPaymentId = formData.get("mayarPaymentId") as string;
   const collectedAmount = formData.get("collectedAmount") as string;
 
   await db
@@ -64,6 +65,7 @@ export async function updateProgram(id: string, formData: FormData) {
       targetAmount: targetAmount ? parseInt(targetAmount) : null,
       notes: notes || null,
       mayarCampaignUrl: mayarCampaignUrl || null,
+      mayarPaymentId: mayarPaymentId || null,
       aiDescription: aiDescription || null,
       aiWhatsappText: aiWhatsappText || null,
       aiInstagramCaption: aiInstagramCaption || null,

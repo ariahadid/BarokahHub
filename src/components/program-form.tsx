@@ -27,6 +27,7 @@ interface ProgramFormProps {
     collectedAmount: number | null;
     notes: string | null;
     mayarCampaignUrl: string | null;
+    mayarPaymentId: string | null;
     aiDescription: string | null;
     aiWhatsappText: string | null;
     aiInstagramCaption: string | null;
@@ -55,6 +56,7 @@ export function ProgramForm({ program, initialData, mosqueSlug, mosqueName, acti
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
   const [mayarUrl, setMayarUrl] = useState(program?.mayarCampaignUrl || "");
+  const [mayarPaymentId, setMayarPaymentId] = useState(program?.mayarPaymentId || "");
   const [creatingMayar, setCreatingMayar] = useState(false);
 
   async function handleGenerate() {
@@ -112,6 +114,7 @@ export function ProgramForm({ program, initialData, mosqueSlug, mosqueName, acti
       }
 
       setMayarUrl(data.campaignUrl);
+      if (data.paymentId) setMayarPaymentId(data.paymentId);
     } catch {
       setError("Terjadi kesalahan saat membuat kampanye Mayar");
     } finally {
@@ -304,6 +307,7 @@ export function ProgramForm({ program, initialData, mosqueSlug, mosqueName, acti
                 </Button>
               </div>
               <input type="hidden" name="mayarCampaignUrl" value={mayarUrl} />
+              <input type="hidden" name="mayarPaymentId" value={mayarPaymentId} />
             </div>
           ) : (
             <div>
@@ -313,6 +317,7 @@ export function ProgramForm({ program, initialData, mosqueSlug, mosqueName, acti
                   : "Simpan program terlebih dahulu, lalu buat link donasi Mayar."}
               </p>
               <input type="hidden" name="mayarCampaignUrl" value="" />
+              <input type="hidden" name="mayarPaymentId" value="" />
             </div>
           )}
 
