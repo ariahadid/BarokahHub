@@ -1,9 +1,11 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.SUMOPOD_API_KEY,
-  baseURL: process.env.SUMOPOD_BASE_URL,
-});
+function getOpenAIClient() {
+  return new OpenAI({
+    apiKey: process.env.SUMOPOD_API_KEY,
+    baseURL: process.env.SUMOPOD_BASE_URL,
+  });
+}
 
 interface GenerateInput {
   mosqueName: string;
@@ -33,7 +35,7 @@ export async function generateProgramContent(input: GenerateInput): Promise<Gene
 
   const categoryLabel = categoryLabels[input.programCategory] || input.programCategory;
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAIClient().chat.completions.create({
     model: "gpt-4o-mini",
     response_format: { type: "json_object" },
     messages: [
