@@ -233,9 +233,9 @@ export default function HomePage() {
               <div className="flex text-amber-400 mb-4">
                 {[1,2,3,4,5].map(star => <Star key={star} className="w-5 h-5 fill-current" />)}
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">"Renovasi Atap Masjid Selesai 2 Bulan Lebih Cepat"</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">&ldquo;Renovasi Atap Masjid Selesai 2 Bulan Lebih Cepat&rdquo;</h3>
               <p className="text-lg text-slate-600 italic leading-relaxed mb-6">
-                "Sebelumnya mengumpulkan dana 300 juta untuk atap terasa sangat berat. Kami harus keliling pakai kotak amal keliling RT. Namun sejak pakai link galang dana dari platform ini, jamaah kami yang sedang merantau di Surabaya dan Jakarta bisa ikut urunan setiap gajian. Transparan, laporannya rapi, dan cepat cair."
+                &ldquo;Sebelumnya mengumpulkan dana 300 juta untuk atap terasa sangat berat. Kami harus keliling pakai kotak amal keliling RT. Namun sejak pakai link galang dana dari platform ini, jamaah kami yang sedang merantau di Surabaya dan Jakarta bisa ikut urunan setiap gajian. Transparan, laporannya rapi, dan cepat cair.&rdquo;
               </p>
               <div>
                 <p className="font-bold text-slate-900 text-lg">Ustadz Ahmad Ridhwan</p>
@@ -258,7 +258,7 @@ export default function HomePage() {
                   <div key={i} className="w-full flex-shrink-0 px-4 flex flex-col items-center text-center transition-opacity duration-700" style={{ opacity: currentTestimonial === i ? 1 : 0.3 }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={item.image} alt={item.mosque} className="w-20 h-20 rounded-full object-cover mb-6 border-4 border-emerald-50 shadow-sm" />
-                    <p className="text-xl md:text-2xl text-slate-700 italic leading-relaxed mb-6">"{item.text}"</p>
+                    <p className="text-xl md:text-2xl text-slate-700 italic leading-relaxed mb-6">&ldquo;{item.text}&rdquo;</p>
                     <h4 className="font-bold text-slate-900 text-lg">{item.mosque}</h4>
                     <p className="text-emerald-600 font-medium">{item.role}</p>
                   </div>
