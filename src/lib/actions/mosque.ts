@@ -9,7 +9,7 @@ import { redirect } from "next/navigation";
 
 export async function createOrUpdateMosque(formData: FormData): Promise<void> {
   const session = await auth();
-  if (!session?.user?.id) throw new Error("Unauthorized");
+  if (!session?.user?.id) throw new Error("Sesi tidak ditemukan. Silakan login ulang.");
 
   const name = formData.get("name") as string;
   const address = formData.get("address") as string;
@@ -17,37 +17,42 @@ export async function createOrUpdateMosque(formData: FormData): Promise<void> {
   const contactWhatsapp = formData.get("contactWhatsapp") as string;
   const description = formData.get("description") as string;
 
-  if (!name) throw new Error("Nama masjid wajib diisi");
+  if (!name) throw new Error("Nama masjid wajib diisi.");
 
-  const existing = await db.query.mosques.findFirst({
-    where: eq(mosques.userId, session.user.id),
-  });
+  try {
+    const existing = await db.query.mosques.findFirst({
+      where: eq(mosques.userId, session.user.id),
+    });
 
-  const slug = generateSlug(name);
+    const slug = generateSlug(name);
 
-  if (existing) {
-    await db
-      .update(mosques)
-      .set({
+    if (existing) {
+      await db
+        .update(mosques)
+        .set({
+          name,
+          slug,
+          address,
+          city,
+          contactWhatsapp,
+          description,
+          updatedAt: new Date(),
+        })
+        .where(eq(mosques.id, existing.id));
+    } else {
+      await db.insert(mosques).values({
         name,
         slug,
         address,
         city,
         contactWhatsapp,
         description,
-        updatedAt: new Date(),
-      })
-      .where(eq(mosques.id, existing.id));
-  } else {
-    await db.insert(mosques).values({
-      name,
-      slug,
-      address,
-      city,
-      contactWhatsapp,
-      description,
-      userId: session.user.id,
-    });
+        userId: session.user.id,
+      });
+    }
+  } catch (err) {
+    console.error("Error creating/updating mosque:", err);
+    throw new Error("Gagal menyimpan data masjid. Pastikan koneksi database sudah benar.");
   }
 
   redirect("/dashboard");
