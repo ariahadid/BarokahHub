@@ -47,4 +47,7 @@ next-env.d.ts
 # local plans
 /plans/
 
+# docs
+/docs/
+
 .vercel
